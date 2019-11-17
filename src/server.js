@@ -25,8 +25,8 @@ io.on('connection', socket => {
         cb('delievered');
     });
 
-    socket.on('location', (loc, cb) => {
-        io.emit('message', `Shared location: https://google.com/maps?q=${loc.latitude},${loc.longitude}`);
+    socket.on('locationMessage', (loc, cb) => {
+        io.emit('locationMessage', `https://google.com/maps?q=${loc.latitude},${loc.longitude}`);
         cb();
     });
 

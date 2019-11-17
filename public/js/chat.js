@@ -6,10 +6,20 @@ const submitBtn = document.querySelector('#chat-form button');
 const shareBtn = document.querySelector('#share-location');
 const messages = document.querySelector('#messages');
 const messageTemplate = document.querySelector('#message-template').innerHTML;
+const locationTemplate = document.querySelector('#location-template').innerHTML;
 
 socket.on('message', message => {
     const html = Mustache.render(messageTemplate, {
         message
+    });
+    messages.insertAdjacentHTML('beforeend', html);
+});
+
+socket.on('locationMessage', url => {
+    console.log('GOT IT')
+    console.log(url)
+    const html = Mustache.render(locationTemplate, {
+        url
     });
     messages.insertAdjacentHTML('beforeend', html);
 });
@@ -35,7 +45,7 @@ shareBtn.addEventListener('click', () => {
 
     navigator.geolocation.getCurrentPosition(pos => {
         const { latitude, longitude } = pos.coords;
-        socket.emit('location', { latitude, longitude }, () => {
+        socket.emit('locationMessage', { latitude, longitude }, () => {
             shareBtn.removeAttribute('disabled');
             console.log('Location shared successfully');
         });
