@@ -2,6 +2,7 @@ const path = require("path");
 const http = require('http');
 const express = require("express");
 const Filter = require('bad-words');
+const { generateMessage, generateLocationMessage } = require('./utils/messages');
 
 const app = express();
 const server = http.createServer(app);
@@ -13,25 +14,25 @@ const publicFolder = path.join(__dirname, '../public');
 app.use(express.static(publicFolder));
 
 io.on('connection', socket => {
-    socket.emit('message', 'Welcome!');
-    socket.broadcast.emit('message', 'A new user has joined!');
+    socket.emit('message', generateMessage('Welcome'));
+    socket.broadcast.emit('message', generateMessage('A new user has joined!'));
 
     socket.on('message', (msg, cb) => {
         const filter = new Filter();
 
         if (filter.isProfane(msg)) return cb('Profanity is not allowed');
 
-        io.emit('message', msg);
+        io.emit('message', generateMessage(msg));
         cb('delievered');
     });
 
     socket.on('locationMessage', (loc, cb) => {
-        io.emit('locationMessage', `https://google.com/maps?q=${loc.latitude},${loc.longitude}`);
+        io.emit('locationMessage', generateLocationMessage(`https://google.com/maps?q=${loc.latitude},${loc.longitude}`));
         cb();
     });
 
     socket.on('disconnect', () => {
-        socket.broadcast.emit('message', 'A user has disconnected.');
+        socket.broadcast.emit('message', generateMessage('A user has disconnected.'));
     });
 });
 

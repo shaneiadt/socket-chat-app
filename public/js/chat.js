@@ -1,7 +1,7 @@
 const socket = io();
 
 const form = document.querySelector('#chat-form');
-const textarea = document.querySelector('#chat-form textarea');
+const input = document.querySelector('#chat-form input');
 const submitBtn = document.querySelector('#chat-form button');
 const shareBtn = document.querySelector('#share-location');
 const messages = document.querySelector('#messages');
@@ -10,32 +10,34 @@ const locationTemplate = document.querySelector('#location-template').innerHTML;
 
 socket.on('message', message => {
     const html = Mustache.render(messageTemplate, {
-        message
+        message: message.text,
+        createdAt: moment(message.createdAt).format('h:mm a')
     });
     messages.insertAdjacentHTML('beforeend', html);
 });
 
-socket.on('locationMessage', url => {
-    console.log('GOT IT')
-    console.log(url)
+socket.on('locationMessage', message => {
     const html = Mustache.render(locationTemplate, {
-        url
+        url: message.url,
+        createdAt: moment(message.createdAt).format('h:mm a')
     });
     messages.insertAdjacentHTML('beforeend', html);
 });
 
 form.addEventListener('submit', function (e) {
     e.preventDefault();
-    submitBtn.setAttribute('disabled', 'disabled');
     const message = this.elements.message.value;
+    if (!message || message === '') return;
+
+    submitBtn.setAttribute('disabled', 'disabled');
 
     socket.emit('message', message, (error) => {
         submitBtn.removeAttribute('disabled');
-        textarea.value = '';
-        textarea.focus();
+        input.value = '';
+        input.focus();
         if (error) return console.log(error);
 
-        console.log('the message was delievered', m);
+        console.log('Message delievered successfully', m);
     });
 });
 

@@ -2,31 +2,46 @@
 <html lang="en">
 
 <head>
-    <title></title>
+    <title>Express & Socketio - Chat App</title>
+    <link rel="icon" href="/img/favicon.png" />
+    <link rel="stylesheet" href="/css/styles.min.css" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
-    <h1>Socket To Me</h1>
+    <div class="chat">
+        <div class="chat__sidebar"></div>
+        <div class="chat__main">
+            <div id="messages" class="chat__messages"></div>
 
-    <div id="messages"></div>
-
-    <form id="chat-form">
-        <textarea name="message" placeholder="Type a message..."></textarea>
-        <button type="submit">Send</button>
-    </form>
-    <button id="share-location">Share location</button>
+            <div class="compose">
+                <form id="chat-form">
+                    <input name="message" placeholder="Type a message..." />
+                    <button type="submit">Send</button>
+                </form>
+                <button id="share-location">Share location</button>
+            </div>
+        </div>
+    </div>
 
     <script id="message-template" type="text/html">
-        <div>
+        <div class="message">
+            <p>
+                <span class="message__name">Username</span>
+                <span class="message__meta">{{createdAt}}</span>
+            </p>
             <p>{{message}}</p>
         </div>
     </script>
-    
+
     <script id="location-template" type="text/html">
-        <div>
-            <p><a target="_blank" href="{{url}}">{{url}}</a></p>
+        <div class="message">
+            <p>
+                <span class="message__name">Username</span>
+                <span class="message__meta">{{createdAt}}</span>
+            </p>
+            <p><a target="_blank" href="{{url}}">My current location</a></p>
         </div>
     </script>
 
