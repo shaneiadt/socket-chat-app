@@ -14,21 +14,25 @@ const publicFolder = path.join(__dirname, '../public');
 app.use(express.static(publicFolder));
 
 io.on('connection', socket => {
-    socket.emit('message', generateMessage('Welcome'));
-    socket.broadcast.emit('message', generateMessage('A new user has joined!'));
 
     socket.on('message', (msg, cb) => {
         const filter = new Filter();
 
         if (filter.isProfane(msg)) return cb('Profanity is not allowed');
 
-        io.emit('message', generateMessage(msg));
+        io.to('Sligo').emit('message', generateMessage(msg));
         cb('delievered');
     });
 
     socket.on('locationMessage', (loc, cb) => {
         io.emit('locationMessage', generateLocationMessage(`https://google.com/maps?q=${loc.latitude},${loc.longitude}`));
         cb();
+    });
+
+    socket.on('join', ({ username, room }) => {
+        socket.join(room);
+        socket.emit('message', generateMessage('Welcome'));
+        socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined!`));
     });
 
     socket.on('disconnect', () => {
